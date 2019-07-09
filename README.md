@@ -114,7 +114,7 @@ required steering angle and, < speed > by a numerical value between±1m/s. as th
 Replace the _<_ flag _>_ field by 0 and 1 alternatingly to indicate you are actively controlling the vehicle.
 the spaces and the # are required.
 
-## # <steer> <speed> <flag> #
+#\<steer\> \<speed\> \<flag\> #
 
 Incorporate mechanisms in the vehicle control module to enable the process management process to
 detect the heartbeat of the vehicle control process and for the vehicle control process to respond to
@@ -149,9 +149,6 @@ Modify the supplied code, provide access to the shared memory, and plot the lase
 data in the virtual world. The laser rangefinder’s scanning plane is 30 cm above the ground level.
 You will then be able to select the pursuit position by pressing the key ’P’ and tele-operate the vehicle
 using the Xbox controller while visualizing the laser data in real time.
-
-### SEE NEXT PAGE
-
 
 # 10 Assessment
 

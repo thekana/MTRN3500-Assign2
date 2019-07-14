@@ -22,13 +22,25 @@ int main() {
 	}
 
 	PMSMPtr = (PM*)PMObj.pData;
-	PMSMPtr->Shutdown = false;
-	while (1) {
-		PMSMPtr->PMTimeStamp = 500.00;
+	PMSMPtr->Shutdown.Flags.PM = 0;
+	PMSMPtr->Heartbeats.Status = 0xFF;
+
+	while (!PMSMPtr->Shutdown.Flags.PM) {
+		Thread::Sleep(2000);
+		// GPS must have set this to HIGH
+		PMSMPtr->PMHeartbeats.Flags.GPS = 1;
+		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
+			Console::WriteLine("In PM Set GPS HIGH");
+			PMSMPtr->Heartbeats.Flags.GPS = 0;
+			PMSMPtr->PMHeartbeats.Flags.GPS = 1;
+		}
+		else {
+			// if GPS is critical we shutdown all
+			PMSMPtr->Shutdown.Status = 0xFF;
+		}
 		if (_kbhit()) break;
-		Thread::Sleep(1000);
+
 	}
-	PMSMPtr->Shutdown = true;
 	Console::WriteLine("Process manager terminated");
 	Console::ReadKey();
 	return 0;

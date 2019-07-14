@@ -18,10 +18,8 @@
     <ClCompile Include="..\Common\SMObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Common\SMObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="GPSMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

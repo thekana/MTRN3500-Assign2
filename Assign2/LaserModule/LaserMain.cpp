@@ -32,6 +32,7 @@ int main() {
 			//}
 		}
 		if (_kbhit()) break;
+		//Console::WriteLine("Variable" + PMSMPtr->variable);
 	}
 
 	Console::WriteLine("Laser Process terminated");

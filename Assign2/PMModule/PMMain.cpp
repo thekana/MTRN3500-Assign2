@@ -90,9 +90,13 @@ int main() {
 		Sleep(1000);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
-		Thread::Sleep(2000);
-		// GPS must have set this to HIGH
+		Thread::Sleep(20);
+		//PMSMPtr->variable = 1;
 		PMSMPtr->PMHeartbeats.Flags.Laser = 1;
+		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {
+			PMSMPtr->Heartbeats.Flags.Laser = 0;
+			PMSMPtr->PMHeartbeats.Flags.Laser = 1;
+		}
 		//PMSMPtr->PMHeartbeats.Flags.GPS = 1;
 		//if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
 		//	PMSMPtr->Heartbeats.Flags.GPS = 0;
@@ -102,6 +106,8 @@ int main() {
 		//	// if GPS is critical we shutdown all
 		//	PMSMPtr->Shutdown.Status = 0xFF;
 		//}
+		Thread::Sleep(20);
+		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
 		if (_kbhit()) break;
 
 	}

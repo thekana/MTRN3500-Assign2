@@ -90,7 +90,7 @@ int main() {
 		Sleep(1000);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
-		Thread::Sleep(20);
+		//Thread::Sleep(20);
 		//PMSMPtr->variable = 1;
 		PMSMPtr->PMHeartbeats.Flags.Laser = 1;
 		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {

@@ -8,20 +8,30 @@ using namespace System::Threading;
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
 	PM* PMSMPtr = nullptr;
-
+	int waitCount = 0;
 	PMObj.SMAccess();
 	if (PMObj.SMAccessError) {
 		Console::WriteLine("Shared memory access failed");
 		return -2;
 	}
-
+	
 	PMSMPtr = (PM*)PMObj.pData;
+	PMSMPtr->Shutdown.Flags.GPS = 0;
 
-	while (!PMSMPtr->Shutdown) {
-		Console::WriteLine("{0,10:F3}",PMSMPtr->PMTimeStamp);
-		PMSMPtr->PMTimeStamp = 0;
-		if (_kbhit()) break;
+	while (!PMSMPtr->Shutdown.Flags.GPS) {
 		Thread::Sleep(20);
+		PMSMPtr->Heartbeats.Flags.GPS = 1;
+		if (PMSMPtr->PMHeartbeats.Flags.GPS == 1) {
+			PMSMPtr->PMHeartbeats.Flags.GPS = 0;
+			waitCount = 0;
+		}
+		else {
+			if (++waitCount > 20) {
+				// we have waited too long
+				PMSMPtr->Shutdown.Status = 0xFF;
+			}
+		}
+		if (_kbhit()) break;
 	}
 
 	Console::WriteLine("GPS Process terminated");

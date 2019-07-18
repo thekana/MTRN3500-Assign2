@@ -13,14 +13,27 @@ struct GPS
 	double Height;
 };
 
+struct ModuleFlags {
+	unsigned char PM : 1,
+		GPS : 1,
+		Laser : 1,
+		Xbox : 1,
+		Vehicle : 1,
+		Unused : 3;
+};
+
+union ExecFlags
+{
+	unsigned char Status;
+	ModuleFlags Flags;
+};
+
 struct PM
 {
-	double PMTimeStamp;
-	double LasterTimeStamp;
-	double GPSTimeStamp;
-	double VehicleTimeStamp;
-	double RemoteTimeStamp;
-	bool Shutdown;
+	ExecFlags Heartbeats;
+	ExecFlags PMHeartbeats;
+	ExecFlags Shutdown;
+	double TimeStamps[5];
 };
 
 struct Vehicle

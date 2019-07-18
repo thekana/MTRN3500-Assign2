@@ -20,10 +20,8 @@ int main() {
 
 	while (!PMSMPtr->Shutdown.Flags.GPS) {
 		Thread::Sleep(20);
-		Console::WriteLine("In GPS Set GPS LOWWW");
 		PMSMPtr->Heartbeats.Flags.GPS = 1;
 		if (PMSMPtr->PMHeartbeats.Flags.GPS == 1) {
-			Console::WriteLine("In GPS Set GPS LOW");
 			PMSMPtr->PMHeartbeats.Flags.GPS = 0;
 			waitCount = 0;
 		}

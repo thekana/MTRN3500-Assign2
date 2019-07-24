@@ -7,6 +7,7 @@
 
 using namespace System; // for console
 using namespace System::Threading;
+#define NUM_PROCESS 1
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
@@ -14,7 +15,6 @@ TCHAR* Units[10] = //
 	TEXT("XBox.exe"),
 	TEXT("VehicleControl.exe"),
 	TEXT("OpenGL.exe"),
-
 };
 // Module execution based variable declarations
 STARTUPINFO s[10];
@@ -60,7 +60,7 @@ int main() {
 	PMSMPtr->Shutdown.Status = 0x00;
 	PMSMPtr->Heartbeats.Status = 0x00;
 	// Starting the processes
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < NUM_PROCESS; i++)
 	{
 		// Check if each process is running
 		if (!IsProcessRunning(Units[i]))
@@ -113,6 +113,18 @@ int main() {
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
 		if (_kbhit()) {
 			PMSMPtr->Shutdown.Status = 0xFF;
+			bool allShutdown = false;
+			while (!allShutdown) {
+				for (int i = 0; i < NUM_PROCESS; i++) {
+					if (IsProcessRunning(Units[i])) {
+						allShutdown = false;
+						break;
+					}
+					else {
+						allShutdown = true;
+					}
+				}
+			}
 		}
 
 	}

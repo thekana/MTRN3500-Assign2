@@ -1,9 +1,4 @@
-#include <SMObject.h>
-#include <SMStructs.h>
-#include <conio.h>	// for kbhit
 #include "LiDAR.h"
-
-#using <System.dll>
 
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));

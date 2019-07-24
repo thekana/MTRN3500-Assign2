@@ -33,14 +33,21 @@ int main() {
 	System::String^ Authen = gcnew System::String("5176970\n");
 	// String to store received data for display
 	System::String^ ResponseData;
+	/*For data reading*/
+	double StartAngle;
+	double Resolution;
+	double NumRanges;
+	array<double> ^Range;
+	array<double> ^RangeX;
+	array<double> ^RangeY;
 
 	// Creat TcpClient object and connect to it
 	Client = gcnew TcpClient("192.168.1.200", PortNumber);
 	// Configure connection
 	Client->NoDelay = true;
-	Client->ReceiveTimeout = 2000;//ms
-	Client->SendTimeout = 2000;//ms
-	Client->ReceiveBufferSize = 1024;
+	Client->ReceiveTimeout = 500;//ms
+	Client->SendTimeout = 500;//ms
+	Client->ReceiveBufferSize = 2048;
 	Client->SendBufferSize = 1024;
 
 	// unsigned char arrays of 16 bytes each are created on managed heap
@@ -48,7 +55,7 @@ int main() {
 	ReadData = gcnew array<unsigned char>(2500);
 	// Convert string command to an array of unsigned char
 	SendData = System::Text::Encoding::ASCII->GetBytes(Authen);
-
+	array<System::String^>^ Fragments = nullptr; // to store splited arrays
 	// Get the network streab object associated with clien so we 
 	// can use it to read and write
 	NetworkStream^ Stream = Client->GetStream();
@@ -71,7 +78,21 @@ int main() {
 			// Convert incoming data from an array of unsigned char bytes to an ASCII string
 			ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
 			// Print the received string on the screen
-			Console::WriteLine(ResponseData);
+			Fragments = ResponseData->Split(' ');
+			StartAngle = System::Convert::ToInt32(Fragments[23], 16);
+			Resolution = System::Convert::ToInt32(Fragments[24], 16) / 10000.0;
+			NumRanges = System::Convert::ToInt32(Fragments[25], 16);
+			Console::WriteLine("{0,10:F3} {1,10:F3} {2:D}", StartAngle, Resolution, NumRanges);
+			Range = gcnew array<double>(NumRanges);
+			RangeX = gcnew array<double>(NumRanges);
+			RangeY = gcnew array<double>(NumRanges);
+
+			for (int i = 0; i < NumRanges; i++) {
+				Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
+				Console::Write("{0,10:F3}", Range[i]);
+				RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
+				RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
+			}
 		}
 		else {
 			//if (++waitCount > 200) {

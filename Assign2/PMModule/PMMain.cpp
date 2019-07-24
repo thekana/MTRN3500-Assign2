@@ -9,8 +9,8 @@ using namespace System; // for console
 using namespace System::Threading;
 TCHAR* Units[10] = //
 {
+	TEXT("GPSModule.exe"),
 	TEXT("LaserModule.exe"),
-	TEXT("GPS.exe"),
 	TEXT("XBox.exe"),
 	TEXT("VehicleControl.exe"),
 	TEXT("OpenGL.exe"),
@@ -56,8 +56,9 @@ int main() {
 	}
 
 	PMSMPtr = (PM*)PMObj.pData;
-	PMSMPtr->Shutdown.Flags.PM = 0;
-	PMSMPtr->Heartbeats.Status = 0xFF;
+	//PMSMPtr->Shutdown.Flags.PM = 0;
+	PMSMPtr->Shutdown.Status = 0x00;
+	PMSMPtr->Heartbeats.Status = 0x00;
 	// Starting the processes
 	for (int i = 0; i < 1; i++)
 	{
@@ -90,27 +91,32 @@ int main() {
 		Sleep(1000);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
-		//Thread::Sleep(20);
-		//PMSMPtr->variable = 1;
-		PMSMPtr->PMHeartbeats.Flags.Laser = 1;
+		Sleep(200);
+		/*Set PM's as alive*/
+		PMSMPtr->PMHeartbeats.Status = 0xFF;
+		//PMSMPtr->Heartbeats.Flags.PM = 1;
+
 		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {
 			PMSMPtr->Heartbeats.Flags.Laser = 0;
-			PMSMPtr->PMHeartbeats.Flags.Laser = 1;
+			//PMSMPtr->PMHeartbeats.Flags.Laser = 1;
 		}
-		//PMSMPtr->PMHeartbeats.Flags.GPS = 1;
-		//if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
-		//	PMSMPtr->Heartbeats.Flags.GPS = 0;
-		//	PMSMPtr->PMHeartbeats.Flags.GPS = 1;
-		//}
-		//else {
-		//	// if GPS is critical we shutdown all
-		//	PMSMPtr->Shutdown.Status = 0xFF;
-		//}
-		Thread::Sleep(20);
-		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
-		if (_kbhit()) break;
+		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
+			PMSMPtr->Heartbeats.Flags.GPS = 0;
+			//PMSMPtr->PMHeartbeats.Flags.GPS = 1;
+		}
+		else {
+			// if GPS is critical we shutdown all
+			PMSMPtr->Shutdown.Status = 0xFF;
+		}
+		Thread::Sleep(10);
+		//Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
+		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
+		if (_kbhit()) {
+			PMSMPtr->Shutdown.Status = 0xFF;
+		}
 
 	}
+	Console::ReadKey();
 	Console::WriteLine("Process manager terminated");
 	Console::ReadKey();
 	return 0;

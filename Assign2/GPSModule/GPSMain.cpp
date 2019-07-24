@@ -19,22 +19,23 @@ int main() {
 	PMSMPtr->Shutdown.Flags.GPS = 0;
 
 	while (!PMSMPtr->Shutdown.Flags.GPS) {
-		Thread::Sleep(20);
 		PMSMPtr->Heartbeats.Flags.GPS = 1;
 		if (PMSMPtr->PMHeartbeats.Flags.GPS == 1) {
 			PMSMPtr->PMHeartbeats.Flags.GPS = 0;
 			waitCount = 0;
 		}
 		else {
-			if (++waitCount > 20) {
+			if (++waitCount > 50) {
 				// we have waited too long
 				PMSMPtr->Shutdown.Status = 0xFF;
 			}
+			Console::WriteLine("Waitcount: " + waitCount);
 		}
 		if (_kbhit()) break;
+		Thread::Sleep(20);
 	}
 
 	Console::WriteLine("GPS Process terminated");
-	Console::ReadKey();
+	//Console::ReadKey();
 	return 0;
 }

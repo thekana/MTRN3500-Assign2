@@ -1,5 +1,5 @@
 #include "LiDAR.h"
-
+#include <conio.h>
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
 	PM* PMSMPtr = nullptr;

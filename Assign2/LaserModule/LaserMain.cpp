@@ -1,12 +1,9 @@
 #include <SMObject.h>
 #include <SMStructs.h>
 #include <conio.h>	// for kbhit
+#include "LiDAR.h"
+
 #using <System.dll>
-using namespace System; // for console
-using namespace System::Threading;
-using namespace System::Net::Sockets;
-using namespace System::Net;
-using namespace System::Text;
 
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));

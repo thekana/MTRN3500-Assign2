@@ -41,24 +41,33 @@ bool IsProcessRunning(const char *processName)
 int main() {
 
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
+	SMObject LaserObj(_TEXT("Laser"), sizeof(Laser));
 	PM* PMSMPtr = nullptr;
-
+	Laser* laserPtr = nullptr;
 	PMObj.SMCreate();
 	if (PMObj.SMCreateError) {
 		Console::WriteLine("Shared memory creation failed");
 		return -1;
 	}
-
 	PMObj.SMAccess();
 	if (PMObj.SMAccessError) {
 		Console::WriteLine("Shared memory access failed");
 		return -2;
 	}
-
+	LaserObj.SMCreate();
+	if (LaserObj.SMCreateError) {
+		Console::WriteLine("Shared memory creation failed");
+		return -1;
+	}
+	LaserObj.SMAccess();
+	if (LaserObj.SMAccessError) {
+		Console::WriteLine("Shared memory access failed");
+		return -2;
+	}
 	PMSMPtr = (PM*)PMObj.pData;
-	//PMSMPtr->Shutdown.Flags.PM = 0;
 	PMSMPtr->Shutdown.Status = 0x00;
 	PMSMPtr->Heartbeats.Status = 0x00;
+	laserPtr = (Laser*)LaserObj.pData;
 	// Starting the processes
 	for (int i = 0; i < NUM_PROCESS; i++)
 	{
@@ -109,7 +118,7 @@ int main() {
 			PMSMPtr->Shutdown.Status = 0xFF;
 		}
 		Thread::Sleep(10);
-		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
+		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser + " Numpoints " + laserPtr->NumPoints);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
 		if (_kbhit()) {
 			PMSMPtr->Shutdown.Status = 0xFF;

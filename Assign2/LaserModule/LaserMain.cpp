@@ -2,14 +2,22 @@
 #include <conio.h>
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
+	SMObject LaserObj(_TEXT("Laser"), sizeof(Laser));
 	PM* PMSMPtr = nullptr;
+	Laser* laserPtr = nullptr;
 	int waitCount = 0;
 	PMObj.SMAccess();
 	if (PMObj.SMAccessError) {
 		Console::WriteLine("Shared memory access failed");
 		return -2;
 	}
+	LaserObj.SMAccess();
+	if (LaserObj.SMAccessError) {
+		Console::WriteLine("Shared memory access failed");
+		return -2;
+	}
 	PMSMPtr = (PM*)PMObj.pData;
+	laserPtr = (Laser*)LaserObj.pData;
 	PMSMPtr->Shutdown.Flags.Laser = 0;
 	// LMS151 port number must be 2111
 	int PortNumber = 23000;
@@ -28,7 +36,7 @@ int main() {
 	/*For data reading*/
 	double StartAngle;
 	double Resolution;
-	double NumRanges;
+	int NumRanges;
 	array<double> ^Range;
 	array<double> ^RangeX;
 	array<double> ^RangeY;
@@ -79,7 +87,8 @@ int main() {
 			StartAngle = System::Convert::ToInt32(Fragments[23], 16);
 			Resolution = System::Convert::ToInt32(Fragments[24], 16) / 10000.0;
 			NumRanges = System::Convert::ToInt32(Fragments[25], 16);
-			if (NumRanges > 361) continue; //skip
+			if (NumRanges != 361) continue; //skip
+			laserPtr->NumPoints = NumRanges;
 			Console::Write("{0,10:F3} {1,10:F3} {2}", StartAngle, Resolution, NumRanges);
 			Range = gcnew array<double>(NumRanges);
 			RangeX = gcnew array<double>(NumRanges);
@@ -92,7 +101,7 @@ int main() {
 				// Console::Write("\t[{0,10:F3}, {1,10:F3}]", RangeX[i], RangeY[i]);
 			}
 
-			Console::WriteLine(" ");
+			Console::WriteLine("");
 		}
 		else {
 			if (++waitCount > 200) {

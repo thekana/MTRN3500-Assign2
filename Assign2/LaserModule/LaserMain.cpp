@@ -48,13 +48,17 @@ int main() {
 	// Convert string command to an array of unsigned char
 	SendData = System::Text::Encoding::ASCII->GetBytes(Authen);
 	array<System::String^>^ Fragments = nullptr; // to store splited arrays
-	// Get the network streab object associated with clien so we 
+	// Get the network streab object associated with client so we 
 	// can use it to read and write
 	NetworkStream^ Stream = Client->GetStream();
-	Stream->Write(SendData, 0, SendData->Length);	// authen
-	SendData = System::Text::Encoding::ASCII->GetBytes(AskScan);
+	/*Authentication*/
+	Stream->Write(SendData, 0, SendData->Length);
+	Stream->Read(ReadData, 0, ReadData->Length);
+	ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
+	Console::WriteLine(ResponseData);
+	/*End of authentication*/
+	SendData = System::Text::Encoding::ASCII->GetBytes(AskScan); // set senddata to request text
 	while (!PMSMPtr->Shutdown.Flags.Laser) {
-		Thread::Sleep(20);
 		PMSMPtr->Heartbeats.Flags.Laser = 1;
 		if (PMSMPtr->PMHeartbeats.Flags.Laser == 1) {
 			PMSMPtr->PMHeartbeats.Flags.Laser = 0;
@@ -69,35 +73,36 @@ int main() {
 			Stream->Read(ReadData, 0, ReadData->Length);
 			// Convert incoming data from an array of unsigned char bytes to an ASCII string
 			ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
+			//Console::WriteLine(ResponseData);
 			// Print the received string on the screen
 			Fragments = ResponseData->Split(' ');
 			StartAngle = System::Convert::ToInt32(Fragments[23], 16);
 			Resolution = System::Convert::ToInt32(Fragments[24], 16) / 10000.0;
 			NumRanges = System::Convert::ToInt32(Fragments[25], 16);
-			Console::WriteLine("{0,10:F3} {1,10:F3} {2:D}", StartAngle, Resolution, NumRanges);
-			Range = gcnew array<double>(NumRanges);
-			RangeX = gcnew array<double>(NumRanges);
-			RangeY = gcnew array<double>(NumRanges);
+			Console::WriteLine("{0,10:F3} {1,10:F3} {2}", StartAngle, Resolution, NumRanges);
+			//Range = gcnew array<double>(NumRanges);
+			//RangeX = gcnew array<double>(NumRanges);
+			//RangeY = gcnew array<double>(NumRanges);
 
-			for (int i = 0; i < NumRanges; i++) {
-				Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
-				Console::Write("{0,10:F3}", Range[i]);
-				RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
-				RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
-			}
-		}
-		else {
-			//if (++waitCount > 200) {
-			//	// we have waited too long
-			//	PMSMPtr->Shutdown.Status = 0xFF;
+			//for (int i = 0; i < NumRanges; i++) {
+			//	Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
+			//	Console::Write("{0,10:F3}", Range[i]);
+			//	RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
+			//	RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
 			//}
 		}
+		else {
+			if (++waitCount > 200) {
+				// we have waited too long
+				PMSMPtr->Shutdown.Status = 0xFF;
+			}
+		}
 		if (_kbhit()) break;
-		//Console::WriteLine("Variable" + PMSMPtr->variable);
+		Thread::Sleep(20);
 	}
 	Stream->Close();
 	Client->Close();
 	Console::WriteLine("Laser Process terminated");
-	Console::ReadKey();
+	//Console::ReadKey();
 	return 0;
 }

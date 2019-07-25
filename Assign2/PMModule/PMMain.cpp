@@ -7,7 +7,7 @@
 
 using namespace System; // for console
 using namespace System::Threading;
-#define NUM_PROCESS 1
+#define NUM_PROCESS 2
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
@@ -88,7 +88,7 @@ int main() {
 			}
 		}
 		std::cout << "Started: " << Units[i] << std::endl;
-		Sleep(1000);
+		Sleep(200);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
 		Sleep(200);
@@ -109,7 +109,7 @@ int main() {
 			PMSMPtr->Shutdown.Status = 0xFF;
 		}
 		Thread::Sleep(10);
-		//Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
+		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
 		if (_kbhit()) {
 			PMSMPtr->Shutdown.Status = 0xFF;

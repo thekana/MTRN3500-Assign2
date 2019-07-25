@@ -79,17 +79,20 @@ int main() {
 			StartAngle = System::Convert::ToInt32(Fragments[23], 16);
 			Resolution = System::Convert::ToInt32(Fragments[24], 16) / 10000.0;
 			NumRanges = System::Convert::ToInt32(Fragments[25], 16);
-			Console::WriteLine("{0,10:F3} {1,10:F3} {2}", StartAngle, Resolution, NumRanges);
-			//Range = gcnew array<double>(NumRanges);
-			//RangeX = gcnew array<double>(NumRanges);
-			//RangeY = gcnew array<double>(NumRanges);
+			Console::Write("{0,10:F3} {1,10:F3} {2}", StartAngle, Resolution, NumRanges);
+			Range = gcnew array<double>(NumRanges);
+			RangeX = gcnew array<double>(NumRanges);
+			RangeY = gcnew array<double>(NumRanges);
 
-			//for (int i = 0; i < NumRanges; i++) {
-			//	Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
-			//	Console::Write("{0,10:F3}", Range[i]);
-			//	RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
-			//	RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
-			//}
+			for (int i = 0; i < 3; i++) {
+				Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
+				//Console::Write("{0,10:F3}", Range[i]);
+				RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
+				RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
+				Console::Write("\t[{0,10:F3}, {1,10:F3}]", RangeX[i], RangeY[i]);
+			}
+
+			Console::WriteLine(" ");
 		}
 		else {
 			if (++waitCount > 200) {

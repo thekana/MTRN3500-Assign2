@@ -20,7 +20,7 @@ private:
 	System::String^ message;
 public:
 	int NumRanges;
-	array<double>^ Ranges;
+	array<double>^ Range;
 	array<double>^ RangeX;
 	array<double>^ RangeY;
 	LiDAR(System::String^ ipaddress, int port);
@@ -28,4 +28,6 @@ public:
 	void GetXYRangeData();
 	double getResolution();
 	double getStartAngle();
+	TcpClient^ getClient();
+	void closeClient();
 };

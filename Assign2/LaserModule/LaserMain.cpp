@@ -14,7 +14,7 @@ int main() {
 	// LMS151 port number must be 2111
 	int PortNumber = 23000;
 	// Pointer to TcpClent type object on managed heap
-	TcpClient^ Client;
+	// TcpClient^ Client;
 	// arrays of unsigned chars to send and receive data
 	array<unsigned char>^ SendData;
 	array<unsigned char>^ ReadData;
@@ -32,15 +32,15 @@ int main() {
 	array<double> ^Range;
 	array<double> ^RangeX;
 	array<double> ^RangeY;
-
-	// Creat TcpClient object and connect to it
-	Client = gcnew TcpClient("192.168.1.200", PortNumber);
-	// Configure connection
-	Client->NoDelay = true;
-	Client->ReceiveTimeout = 500;//ms
-	Client->SendTimeout = 500;//ms
-	Client->ReceiveBufferSize = 2048;
-	Client->SendBufferSize = 1024;
+	LiDAR^ laser = gcnew LiDAR("192.168.1.200", PortNumber);
+	//// Creat TcpClient object and connect to it
+	//Client = gcnew TcpClient("192.168.1.200", PortNumber);
+	//// Configure connection
+	//Client->NoDelay = true;
+	//Client->ReceiveTimeout = 500;//ms
+	//Client->SendTimeout = 500;//ms
+	//Client->ReceiveBufferSize = 2048;
+	//Client->SendBufferSize = 1024;
 
 	// unsigned char arrays of 16 bytes each are created on managed heap
 	SendData = gcnew array<unsigned char>(16);
@@ -50,7 +50,7 @@ int main() {
 	array<System::String^>^ Fragments = nullptr; // to store splited arrays
 	// Get the network streab object associated with client so we 
 	// can use it to read and write
-	NetworkStream^ Stream = Client->GetStream();
+	NetworkStream^ Stream = laser->getClient()->GetStream();
 	/*Authentication*/
 	Stream->Write(SendData, 0, SendData->Length);
 	Stream->Read(ReadData, 0, ReadData->Length);
@@ -79,17 +79,17 @@ int main() {
 			StartAngle = System::Convert::ToInt32(Fragments[23], 16);
 			Resolution = System::Convert::ToInt32(Fragments[24], 16) / 10000.0;
 			NumRanges = System::Convert::ToInt32(Fragments[25], 16);
+			if (NumRanges > 361) continue; //skip
 			Console::Write("{0,10:F3} {1,10:F3} {2}", StartAngle, Resolution, NumRanges);
 			Range = gcnew array<double>(NumRanges);
 			RangeX = gcnew array<double>(NumRanges);
 			RangeY = gcnew array<double>(NumRanges);
-
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < NumRanges; i++) {
 				Range[i] = System::Convert::ToInt32(Fragments[26 + i], 16);
 				//Console::Write("{0,10:F3}", Range[i]);
 				RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
 				RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
-				Console::Write("\t[{0,10:F3}, {1,10:F3}]", RangeX[i], RangeY[i]);
+				// Console::Write("\t[{0,10:F3}, {1,10:F3}]", RangeX[i], RangeY[i]);
 			}
 
 			Console::WriteLine(" ");
@@ -104,8 +104,8 @@ int main() {
 		Thread::Sleep(20);
 	}
 	Stream->Close();
-	Client->Close();
+	laser->closeClient();
 	Console::WriteLine("Laser Process terminated");
-	//Console::ReadKey();
+	// Console::ReadKey();
 	return 0;
 }

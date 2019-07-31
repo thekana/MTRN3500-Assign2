@@ -6,7 +6,7 @@ struct Remote
 	double SetSteering;
 };
 
-struct GPS
+struct GPS_sm
 {
 	double Easting;
 	double Northing;

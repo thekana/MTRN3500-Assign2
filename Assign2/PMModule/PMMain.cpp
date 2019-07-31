@@ -39,35 +39,26 @@ bool IsProcessRunning(const char *processName)
 }
 
 int main() {
-
+	//------------Shared Memory Objects---------------
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
 	SMObject LaserObj(_TEXT("Laser"), sizeof(Laser));
+	SMObject GPSObj(_TEXT("GPS"), sizeof(GPS_sm));
+	//------------SM Objects Create/Access-------------
+	PMObj.SMCreate();
+	PMObj.SMAccess();
+	LaserObj.SMCreate();
+	LaserObj.SMAccess();
+	GPSObj.SMCreate();
+	GPSObj.SMAccess();
+	//------------Pointer things----------------
 	PM* PMSMPtr = nullptr;
 	Laser* laserPtr = nullptr;
-	PMObj.SMCreate();
-	if (PMObj.SMCreateError) {
-		Console::WriteLine("Shared memory creation failed");
-		return -1;
-	}
-	PMObj.SMAccess();
-	if (PMObj.SMAccessError) {
-		Console::WriteLine("Shared memory access failed");
-		return -2;
-	}
-	LaserObj.SMCreate();
-	if (LaserObj.SMCreateError) {
-		Console::WriteLine("Shared memory creation failed");
-		return -1;
-	}
-	LaserObj.SMAccess();
-	if (LaserObj.SMAccessError) {
-		Console::WriteLine("Shared memory access failed");
-		return -2;
-	}
 	PMSMPtr = (PM*)PMObj.pData;
+	laserPtr = (Laser*)LaserObj.pData;
+	GPS_sm* GPSPtr = (GPS_sm*)GPSObj.pData;
+	// Initialize status
 	PMSMPtr->Shutdown.Status = 0x00;
 	PMSMPtr->Heartbeats.Status = 0x00;
-	laserPtr = (Laser*)LaserObj.pData;
 	// Starting the processes
 	for (int i = 0; i < NUM_PROCESS; i++)
 	{

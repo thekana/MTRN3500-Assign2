@@ -1,23 +1,23 @@
 #include <SMObject.h>
 #include <SMStructs.h>
 #include <conio.h>	// for kbhit
+#include "GPS.h"
 
 using namespace System; // for console
 using namespace System::Threading;
 
 int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
-	PM* PMSMPtr = nullptr;
-	int waitCount = 0;
+	SMObject GPSObj(_TEXT("GPS"), sizeof(GPS_sm));
+	//-----------Shared memory setup---------
 	PMObj.SMAccess();
-	if (PMObj.SMAccessError) {
-		Console::WriteLine("Shared memory access failed");
-		return -2;
-	}
-	
-	PMSMPtr = (PM*)PMObj.pData;
+	GPSObj.SMAccess();
+	PM* PMSMPtr = (PM*)PMObj.pData;
+	GPS_sm* GPSPtr = (GPS_sm*)GPSObj.pData;
+	//-----------GPS Object setup------------
+	GPS^ myGPS = gcnew GPS("192.168.1.200", 24000);
 	PMSMPtr->Shutdown.Flags.GPS = 0;
-
+	int waitCount = 0;
 	while (!PMSMPtr->Shutdown.Flags.GPS) {
 		PMSMPtr->Heartbeats.Flags.GPS = 1;
 		if (PMSMPtr->PMHeartbeats.Flags.GPS == 1) {
@@ -31,6 +31,12 @@ int main() {
 			}
 			Console::WriteLine("Waitcount: " + waitCount);
 		}
+		/*GPS routine CRC is handled in GPS::processGPSData()*/
+		myGPS->processGPSData();
+		GPSPtr->Easting = myGPS->getEasting();
+		GPSPtr->Northing = myGPS->getNorthing();
+		GPSPtr->Height = myGPS->getHeight();
+
 		if (_kbhit()) break;
 		Thread::Sleep(20);
 	}

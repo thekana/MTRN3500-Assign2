@@ -6,7 +6,7 @@ LiDAR::LiDAR(System::String ^ ipaddress, int port)
 	this->portNumber = port;
 	this->Client = gcnew TcpClient(IPAddress, portNumber);
 	this->Client->NoDelay = true;
-	this->Client->ReceiveTimeout = 500;//ms
+	this->Client->ReceiveTimeout = 2000;//ms
 	this->Client->SendTimeout = 500;//ms
 	this->Client->ReceiveBufferSize = 2048;
 	this->Client->SendBufferSize = 1024;

@@ -36,7 +36,8 @@ int main() {
 		GPSPtr->Easting = myGPS->getEasting();
 		GPSPtr->Northing = myGPS->getNorthing();
 		GPSPtr->Height = myGPS->getHeight();
-
+		Console::Write("\t[{0,10:F3}, {1,10:F3}, {2,10:F3}]", GPSPtr->Northing, GPSPtr->Easting, GPSPtr->Height);
+		Console::WriteLine("");
 		if (_kbhit()) break;
 		Thread::Sleep(20);
 	}

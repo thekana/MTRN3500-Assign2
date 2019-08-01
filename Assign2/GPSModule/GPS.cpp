@@ -18,7 +18,7 @@ GPS::GPS(String ^ ipaddress, int portNumber)
 	this->portNumber = portNumber;
 	this->Client = gcnew TcpClient(this->IPAddress, this->portNumber);
 	Client->NoDelay = true;
-	Client->ReceiveTimeout = 1500;//ms
+	Client->ReceiveTimeout = 2000;//ms
 	Client->SendTimeout = 500;//ms
 	Client->ReceiveBufferSize = 1024;
 	Client->SendBufferSize = 1024;
@@ -41,15 +41,16 @@ void GPS::processGPSData()
 		Stream->Read(ReadData, 0, ReadData->Length);
 	}
 	/*Print statement to observe*/
-	for (int i = 0; i < ReadData->Length; i++) {
-		Console::Write("{0:X2} ", ReadData[i]);
-	}
+	//for (int i = 0; i < ReadData->Length; i++) {
+	//	Console::Write("{0:X2} ", ReadData[i]);
+	//}
 	Console::WriteLine("");
 	this->readFromHeader();
 	// Compare CRC before setting attributes
 	unsigned char *bytePtr = (unsigned char*)&GPS_struct;
 	unsigned int GeneratedCRC = CalculateBlockCRC32(112 - 4, bytePtr);
 	this->CRC = GPS_struct.Checksum;
+	Console::WriteLine("CalcCRC: {0}, ServerCRC: {1}, Equal {2}]", GeneratedCRC, CRC, GeneratedCRC == CRC);
 	/*Setting attributes*/
 	if (GeneratedCRC == this->CRC) {
 		this->easting = GPS_struct.Easting;
@@ -86,6 +87,7 @@ void GPS::readFromHeader()
 {
 	// Start reading from header. From there we fill GPS_struct
 	// Trapping the Header
+	bool hasHeader = false;
 	unsigned int Header = 0;
 	int i = 0;
 	int Start; //Start of data
@@ -94,8 +96,14 @@ void GPS::readFromHeader()
 	{
 		Data = ReadData[i++];
 		Header = ((Header << 8) | Data);
-	} while (Header != 0xaa44121c);
-	Start = i - 4;
+		if (Header == 0xaa44121c) {
+			hasHeader = true;
+		}
+	} while (Header != 0xaa44121c && i< ReadData->Length);
+	Start = i - 4;
+	if (hasHeader == false) {
+		return;
+	}
 	// Filling data
 	unsigned char *BytePtr = nullptr;
 	BytePtr = (unsigned char*)&GPS_struct;

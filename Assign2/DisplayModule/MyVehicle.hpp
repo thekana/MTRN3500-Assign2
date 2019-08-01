@@ -6,8 +6,14 @@
 
 class MyVehicle : public Vehicle
 {
+private:
+	int *numData;
+	double *xData;
+	double *yData;
+	void drawLaser();
 public:
-	MyVehicle();
+	MyVehicle(int *numpoints, double xData[], double yData[]);
+	void setLaserData(int *numpoints, double xData[], double yData[]);
 	virtual void draw();
 };
 

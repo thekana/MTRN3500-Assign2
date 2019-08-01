@@ -5,6 +5,8 @@
 #include <cstring>
 #include <sstream>
 #include <map>
+#include <SMObject.h>
+#include <SMStructs.h>
 
 #ifdef __APPLE__
 	#include <OpenGL/gl.h>
@@ -98,11 +100,23 @@ int main(int argc, char ** argv) {
 	//   with the name of the class you want to show as the current 
 	//   custom vehicle.
 	// -------------------------------------------------------------------------
-	vehicle = new MyVehicle();
-
+	
+	/*Shared memory create*/
+	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
+	SMObject LaserObj(_TEXT("Laser"), sizeof(Laser));
+	PMObj.SMAccess();
+	LaserObj.SMAccess();
+	/*Shared memory pointers*/
+	PM* PMSMPtr = nullptr;
+	Laser* laserPtr = nullptr;
+	PMSMPtr = (PM*)PMObj.pData;
+	laserPtr = (Laser*)LaserObj.pData;
+	
+	/*vehicle setup*/
+	vehicle = new MyVehicle(&(laserPtr->NumPoints), laserPtr->XRange, laserPtr->YRange);
 
 	glutMainLoop();
-
+	
 	if (vehicle != NULL) {
 		delete vehicle;
 	}

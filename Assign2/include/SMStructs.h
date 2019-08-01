@@ -36,7 +36,7 @@ struct PM
 	double TimeStamps[5];
 };
 
-struct Vehicle
+struct Vehicle_1
 {
 	double ActualSpeed;
 	double ActualSteering;

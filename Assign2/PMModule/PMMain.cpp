@@ -7,14 +7,14 @@
 
 using namespace System; // for console
 using namespace System::Threading;
-#define NUM_PROCESS 2
+#define NUM_PROCESS 3
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
 	TEXT("LaserModule.exe"),
+	TEXT("DisplayModule.exe"),
 	TEXT("XBox.exe"),
 	TEXT("VehicleControl.exe"),
-	TEXT("OpenGL.exe"),
 };
 // Module execution based variable declarations
 STARTUPINFO s[10];

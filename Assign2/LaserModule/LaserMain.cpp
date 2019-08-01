@@ -98,8 +98,10 @@ int main() {
 				//Console::Write("{0,10:F3}", Range[i]);
 				RangeX[i] = Range[i] * Math::Sin(i*Resolution*Math::PI / 180.0);
 				RangeY[i] = -Range[i] * Math::Cos(i*Resolution*Math::PI / 180.0);
-				// Console::Write("\t[{0,10:F3}, {1,10:F3}]", RangeX[i], RangeY[i]);
+				laserPtr->XRange[i] = RangeX[i];
+				laserPtr->YRange[i] = RangeY[i];
 			}
+			Console::WriteLine("\t[{0,10:F3}, {1,10:F3}]", RangeX[360], RangeY[360]);
 
 			Console::WriteLine("");
 		}

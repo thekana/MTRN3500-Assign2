@@ -38,6 +38,35 @@ bool IsProcessRunning(const char *processName)
 	return exists;
 }
 
+int startProcess(int i) {
+	if (!IsProcessRunning(Units[i]))
+	{
+		ZeroMemory(&s[i], sizeof(s[i]));
+		s[i].cb = sizeof(s[i]);
+		ZeroMemory(&p[i], sizeof(p[i]));
+		// Start the child processes.
+
+		if (!CreateProcess(NULL,   // No module name (use command line)
+			Units[i],        // Command line
+			NULL,           // Process handle not inheritable
+			NULL,           // Thread handle not inheritable
+			FALSE,          // Set handle inheritance to FALSE
+			CREATE_NEW_CONSOLE,              // No creation flags
+			NULL,           // Use parent's environment block
+			NULL,           // Use parent's starting directory
+			&s[i],            // Pointer to STARTUPINFO structure
+			&p[i])           // Pointer to PROCESS_INFORMATION structure
+			)
+		{
+			printf("%s failed (%d).\n", Units[i], GetLastError());
+			_getch();
+			return -1;
+		}
+	}
+	std::cout << "Started: " << Units[i] << std::endl;
+	Sleep(200);
+}
+
 int main() {
 	//------------Shared Memory Objects---------------
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
@@ -62,52 +91,57 @@ int main() {
 	// Starting the processes
 	for (int i = 0; i < NUM_PROCESS; i++)
 	{
-		// Check if each process is running
-		if (!IsProcessRunning(Units[i]))
-		{
-			ZeroMemory(&s[i], sizeof(s[i]));
-			s[i].cb = sizeof(s[i]);
-			ZeroMemory(&p[i], sizeof(p[i]));
-			// Start the child processes.
-
-			if (!CreateProcess(NULL,   // No module name (use command line)
-				Units[i],        // Command line
-				NULL,           // Process handle not inheritable
-				NULL,           // Thread handle not inheritable
-				FALSE,          // Set handle inheritance to FALSE
-				CREATE_NEW_CONSOLE,              // No creation flags
-				NULL,           // Use parent's environment block
-				NULL,           // Use parent's starting directory
-				&s[i],            // Pointer to STARTUPINFO structure
-				&p[i])           // Pointer to PROCESS_INFORMATION structure
-				)
-			{
-				printf("%s failed (%d).\n", Units[i], GetLastError());
-				_getch();
-				return -1;
-			}
+		if (startProcess(i) == -1) {
+			return -1;
 		}
-		std::cout << "Started: " << Units[i] << std::endl;
-		Sleep(200);
+		//// Check if each process is running
+		//if (!IsProcessRunning(Units[i]))
+		//{
+		//	ZeroMemory(&s[i], sizeof(s[i]));
+		//	s[i].cb = sizeof(s[i]);
+		//	ZeroMemory(&p[i], sizeof(p[i]));
+		//	// Start the child processes.
+
+		//	if (!CreateProcess(NULL,   // No module name (use command line)
+		//		Units[i],        // Command line
+		//		NULL,           // Process handle not inheritable
+		//		NULL,           // Thread handle not inheritable
+		//		FALSE,          // Set handle inheritance to FALSE
+		//		CREATE_NEW_CONSOLE,              // No creation flags
+		//		NULL,           // Use parent's environment block
+		//		NULL,           // Use parent's starting directory
+		//		&s[i],            // Pointer to STARTUPINFO structure
+		//		&p[i])           // Pointer to PROCESS_INFORMATION structure
+		//		)
+		//	{
+		//		printf("%s failed (%d).\n", Units[i], GetLastError());
+		//		_getch();
+		//		return -1;
+		//	}
+		//}
+		//std::cout << "Started: " << Units[i] << std::endl;
+		//Sleep(200);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
 		Sleep(200);
 		/*Set PM's as alive*/
 		PMSMPtr->PMHeartbeats.Status = 0xFF;
-		//PMSMPtr->Heartbeats.Flags.PM = 1;
 
 		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {
 			PMSMPtr->Heartbeats.Flags.Laser = 0;
-			//PMSMPtr->PMHeartbeats.Flags.Laser = 1;
-		}
-		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
-			PMSMPtr->Heartbeats.Flags.GPS = 0;
-			//PMSMPtr->PMHeartbeats.Flags.GPS = 1;
 		}
 		else {
 			// if GPS is critical we shutdown all
 			PMSMPtr->Shutdown.Status = 0xFF;
+			break;
 		}
+		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
+			PMSMPtr->Heartbeats.Flags.GPS = 0;
+		}
+		else {
+			startProcess(0);
+		}
+
 		Thread::Sleep(10);
 		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser + " Numpoints " + laserPtr->NumPoints);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
@@ -128,7 +162,7 @@ int main() {
 		}
 
 	}
-	Console::ReadKey();
+	//Console::ReadKey();
 	Console::WriteLine("Process manager terminated");
 	Console::ReadKey();
 	return 0;

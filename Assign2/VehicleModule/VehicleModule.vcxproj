@@ -20,7 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\SMObject.cpp" />
+    <ClCompile Include="UGV.cpp" />
     <ClCompile Include="VehicleMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UGV.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

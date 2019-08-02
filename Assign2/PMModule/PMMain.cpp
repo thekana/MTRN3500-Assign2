@@ -7,14 +7,14 @@
 
 using namespace System; // for console
 using namespace System::Threading;
-#define NUM_PROCESS 4
+#define NUM_PROCESS 5
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
 	TEXT("LaserModule.exe"),
-	TEXT("DisplayModule.exe"),
-	TEXT("XBoxModule.exe"),
 	TEXT("VehicleModule.exe"),
+	TEXT("XBoxModule.exe"),
+	TEXT("DisplayModule.exe"),
 };
 // Module execution based variable declarations
 STARTUPINFO s[10];
@@ -123,13 +123,13 @@ int main() {
 			PMSMPtr->Shutdown.Status = 0xFF;
 			break;
 		}
-		////if (PMSMPtr->Heartbeats.Flags.Vehicle == 1) {
-		////	PMSMPtr->Heartbeats.Flags.Vehicle = 0;
-		////}
-		////else {
-		////	PMSMPtr->Shutdown.Status = 0xFF;
-		////	break;
-		////}
+		if (PMSMPtr->Heartbeats.Flags.Vehicle == 1) {
+			PMSMPtr->Heartbeats.Flags.Vehicle = 0;
+		}
+		else {
+			PMSMPtr->Shutdown.Status = 0xFF;
+			break;
+		}
 		//-----Non critical process---------
 		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
 			PMSMPtr->Heartbeats.Flags.GPS = 0;
@@ -142,8 +142,9 @@ int main() {
 		Thread::Sleep(10);
 		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
-		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox); 
-		Console::WriteLine("RT: {0,10:F3} LT: {1,10:F3}",XboxPtr->ControlSpeed, XboxPtr->ControlSteering);
+		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox);
+		Console::WriteLine("Vehicle Heartbeat " + PMSMPtr->Heartbeats.Flags.Vehicle);
+		//Console::WriteLine("RT: {0,10:F3} LT: {1,10:F3}",XboxPtr->ControlSpeed, XboxPtr->ControlSteering);
 
 		//--------Shutdown all routine--------
 		//TODO: Add Xbox boolean shutdown?

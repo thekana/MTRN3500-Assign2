@@ -19,6 +19,8 @@
 #include <GL/glut.h>
 #include <unistd.h>
 #endif
+using namespace System; // for console
+using namespace System::Threading;
 
 
 void drawUGV(double steerAngle)
@@ -135,31 +137,32 @@ void drawUGV(double steerAngle)
 void MyVehicle::drawLaser()
 {
 	glPushMatrix();
-	glTranslatef(x, y, z);
-	glRotatef(-rotation, 0, 0, 0);
+	// glTranslatef(x, y, z);
+	// glRotatef(-rotation, 0, 0, 0);
 	double X1 = 0, X2 = 0, Y1 = 0, Y2 = 0;
 	glColor3f(0, 1.0, 0);
 	glLineWidth(2);
 	for (int i = 0; i < *numData; i++) {
 
 
-		//glBegin(GL_LINES);
-		//glVertex3f(0, 0, 0);
-		////glVertex3f(*(yData + i), 0, *(xData + i));
+		glBegin(GL_LINES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(*(xData + i) / 100, 0, -*(yData + i) / 100);
 		//glVertex3f(0, *(yData + i), *(xData + i));
-		//glEnd();
-		if (*(xData + i) != 0 || *(yData + i) != 0) {
-			X1 = X2;
-			Y1 = Y2;
-			X2 = *(xData + i);
-			Y2 = *(yData + i);
-			//glVertex3f(1, 0, 0);
-			glBegin(GL_LINES);
-			glVertex3f(X1 / 100, 0 , Y1 / 100);
-			glVertex3f(X2 / 100, 0 , Y2 / 100);
-			glEnd();
-			//glVertex3f(Y2 / 100 + 1, 0, X2 / 100);
-		}
+		glEnd();
+		//if (*(xData + i) != 0 || *(yData + i) != 0) {
+		//	X1 = X2;
+		//	Y1 = Y2;
+		//	X2 = *(xData + i);
+		//	Y2 = *(yData + i);
+		//	//glVertex3f(1, 0, 0);
+		//	glBegin(GL_LINES);
+		//	glTranslatef(x, y, z);
+		//	glVertex3f(X1 / 100, 0 , -Y1 / 100);
+		//	glVertex3f(X2 / 100, 0 , -Y2 / 100);
+		//	glEnd();
+		//	//glVertex3f(Y2 / 100 + 1, 0, X2 / 100);
+		//}
 		// glEnd();
 		//std::cout << "print laser_" << *numData << " X: " << *(xData + i) << " Y: " << *(yData + i) << std::endl;
 	}
@@ -189,5 +192,6 @@ void MyVehicle::draw()
 
 	drawUGV(steering);
 	drawLaser();
+	Thread::Sleep(50);
 	glPopMatrix();
 }

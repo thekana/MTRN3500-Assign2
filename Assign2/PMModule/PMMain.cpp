@@ -152,7 +152,7 @@ int main() {
 			PMSMPtr->Shutdown.Status = 0xFF;
 			bool allShutdown = false;
 			while (!allShutdown) {
-				for (int i = 0; i < NUM_PROCESS; i++) {
+				for (int i = 0; i < NUM_PROCESS-1; i++) {
 					if (IsProcessRunning(Units[i])) {
 						allShutdown = false;
 						break;

@@ -7,14 +7,14 @@
 
 using namespace System; // for console
 using namespace System::Threading;
-#define NUM_PROCESS 3
+#define NUM_PROCESS 4
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
 	TEXT("LaserModule.exe"),
 	TEXT("DisplayModule.exe"),
-	TEXT("XBox.exe"),
-	TEXT("VehicleControl.exe"),
+	TEXT("XBoxModule.exe"),
+	TEXT("VehicleModule.exe"),
 };
 // Module execution based variable declarations
 STARTUPINFO s[10];
@@ -72,6 +72,8 @@ int main() {
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
 	SMObject LaserObj(_TEXT("Laser"), sizeof(Laser));
 	SMObject GPSObj(_TEXT("GPS"), sizeof(GPS_sm));
+	SMObject XboxObj(_TEXT("XBOX"), sizeof(Remote));
+	SMObject UGVObj(_TEXT("UGV"), sizeof(Vehicle_1));
 	//------------SM Objects Create/Access-------------
 	PMObj.SMCreate();
 	PMObj.SMAccess();
@@ -79,12 +81,19 @@ int main() {
 	LaserObj.SMAccess();
 	GPSObj.SMCreate();
 	GPSObj.SMAccess();
+	XboxObj.SMCreate();
+	XboxObj.SMAccess();
+	UGVObj.SMCreate();
+	UGVObj.SMAccess();
 	//------------Pointer things----------------
 	PM* PMSMPtr = nullptr;
 	Laser* laserPtr = nullptr;
 	PMSMPtr = (PM*)PMObj.pData;
 	laserPtr = (Laser*)LaserObj.pData;
 	GPS_sm* GPSPtr = (GPS_sm*)GPSObj.pData;
+	Remote* XboxPtr = (Remote*)XboxObj.pData;
+	Vehicle_1* UGVPtr = (Vehicle_1*)UGVObj.pData;
+	//-----------------------------------------
 	// Initialize status
 	PMSMPtr->Shutdown.Status = 0x00;
 	PMSMPtr->Heartbeats.Status = 0x00;
@@ -94,47 +103,34 @@ int main() {
 		if (startProcess(i) == -1) {
 			return -1;
 		}
-		//// Check if each process is running
-		//if (!IsProcessRunning(Units[i]))
-		//{
-		//	ZeroMemory(&s[i], sizeof(s[i]));
-		//	s[i].cb = sizeof(s[i]);
-		//	ZeroMemory(&p[i], sizeof(p[i]));
-		//	// Start the child processes.
-
-		//	if (!CreateProcess(NULL,   // No module name (use command line)
-		//		Units[i],        // Command line
-		//		NULL,           // Process handle not inheritable
-		//		NULL,           // Thread handle not inheritable
-		//		FALSE,          // Set handle inheritance to FALSE
-		//		CREATE_NEW_CONSOLE,              // No creation flags
-		//		NULL,           // Use parent's environment block
-		//		NULL,           // Use parent's starting directory
-		//		&s[i],            // Pointer to STARTUPINFO structure
-		//		&p[i])           // Pointer to PROCESS_INFORMATION structure
-		//		)
-		//	{
-		//		printf("%s failed (%d).\n", Units[i], GetLastError());
-		//		_getch();
-		//		return -1;
-		//	}
-		//}
-		//std::cout << "Started: " << Units[i] << std::endl;
-		//Sleep(200);
 	}
 	while (!PMSMPtr->Shutdown.Flags.PM) {
 		Sleep(200);
 		/*Set PM's as alive*/
 		PMSMPtr->PMHeartbeats.Status = 0xFF;
-
+		//------Critical processes----------
 		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {
 			PMSMPtr->Heartbeats.Flags.Laser = 0;
 		}
 		else {
-			// if GPS is critical we shutdown all
 			PMSMPtr->Shutdown.Status = 0xFF;
 			break;
 		}
+		if (PMSMPtr->Heartbeats.Flags.Xbox == 1) {
+			PMSMPtr->Heartbeats.Flags.Xbox = 0;
+		}
+		else {
+			PMSMPtr->Shutdown.Status = 0xFF;
+			break;
+		}
+		////if (PMSMPtr->Heartbeats.Flags.Vehicle == 1) {
+		////	PMSMPtr->Heartbeats.Flags.Vehicle = 0;
+		////}
+		////else {
+		////	PMSMPtr->Shutdown.Status = 0xFF;
+		////	break;
+		////}
+		//-----Non critical process---------
 		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
 			PMSMPtr->Heartbeats.Flags.GPS = 0;
 		}
@@ -142,9 +138,14 @@ int main() {
 			startProcess(0);
 		}
 
+		//---------Printing heartbeats--------------
 		Thread::Sleep(10);
-		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser + " Numpoints " + laserPtr->NumPoints);
+		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
+		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox + "RT: " + XboxPtr->ControlSpeed + "LT: " + XboxPtr->ControlSteering);
+
+		//--------Shutdown all routine--------
+		//TODO: Add Xbox boolean shutdown?
 		if (_kbhit()) {
 			PMSMPtr->Shutdown.Status = 0xFF;
 			bool allShutdown = false;

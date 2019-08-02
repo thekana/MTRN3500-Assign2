@@ -2,8 +2,8 @@
 
 struct Remote
 {
-	double SetSpeed;
-	double SetSteering;
+	double ControlSpeed;
+	double ControlSteering;
 };
 
 struct GPS_sm

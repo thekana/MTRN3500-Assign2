@@ -2,7 +2,8 @@
 #include <SMObject.h>
 #include <conio.h>
 #include "XBoxController.h"
-
+#define MIN_JOY_STICK -32768.0
+#define MAX_JOY_STICK 32767.0
 using namespace System; // for console
 using namespace System::Threading;
 
@@ -32,8 +33,12 @@ int main() {
 			}
 			Console::WriteLine("Waitcount: " + waitCount);
 		}
-		XboxPtr->ControlSpeed = controller.RightTriggerLocation();
-		XboxPtr->ControlSteering = controller.LeftTriggerLocation();
+		controller.SetDeadzone(30);
+		//--------------Scaling to -1 +1 for Speed and -40 +40 for Steering
+		double speed = (controller.RightThumbLocation().GetY() - MIN_JOY_STICK) / (MAX_JOY_STICK - MIN_JOY_STICK) * (1 - (-1)) + (-1);
+		double steering = (controller.LeftThumbLocation().GetX() - MIN_JOY_STICK) / (MAX_JOY_STICK - MIN_JOY_STICK) * (40 - (-40)) + (-40);
+		XboxPtr->ControlSpeed = speed;
+		XboxPtr->ControlSteering = steering;
 		if (_kbhit()) break;
 		Thread::Sleep(20);
 	}

@@ -142,7 +142,8 @@ int main() {
 		Thread::Sleep(10);
 		Console::WriteLine("Laser Heartbeat " + PMSMPtr->Heartbeats.Flags.Laser);
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
-		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox + "RT: " + XboxPtr->ControlSpeed + "LT: " + XboxPtr->ControlSteering);
+		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox); 
+		Console::WriteLine("RT: {0,10:F3} LT: {1,10:F3}",XboxPtr->ControlSpeed, XboxPtr->ControlSteering);
 
 		//--------Shutdown all routine--------
 		//TODO: Add Xbox boolean shutdown?

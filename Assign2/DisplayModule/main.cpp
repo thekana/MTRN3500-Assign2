@@ -188,6 +188,10 @@ double getTime()
 
 void idle() {
 
+	SMObject XboxObj(_TEXT("XBOX"), sizeof(Remote));
+	XboxObj.SMAccess();
+	Remote* XboxPtr = (Remote*)XboxObj.pData;
+
 	if (KeyManager::get()->isAsciiKeyPressed('a')) {
 		Camera::get()->strafeLeft();
 	}
@@ -212,8 +216,8 @@ void idle() {
 		Camera::get()->strafeUp();
 	}
 
-	speed = 0;
-	steering = 0;
+	speed = XboxPtr->ControlSpeed;
+	steering = XboxPtr->ControlSteering;
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_LEFT)) {
 		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;   

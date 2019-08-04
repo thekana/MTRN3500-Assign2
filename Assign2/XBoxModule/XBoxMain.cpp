@@ -33,7 +33,7 @@ int main() {
 			}
 			Console::WriteLine("Waitcount: " + waitCount);
 		}
-		controller.SetDeadzone(30);
+		controller.SetDeadzone(10000);
 		//--------------Scaling to -1 +1 for Speed and -40 +40 for Steering
 		double speed = (controller.RightThumbLocation().GetY() - MIN_JOY_STICK) / (MAX_JOY_STICK - MIN_JOY_STICK) * (1 - (-1)) + (-1);
 		double steering = (controller.LeftThumbLocation().GetX() - MIN_JOY_STICK) / (MAX_JOY_STICK - MIN_JOY_STICK) * (40 - (-40)) + (-40);

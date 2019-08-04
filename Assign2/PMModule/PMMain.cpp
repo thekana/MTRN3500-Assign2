@@ -67,6 +67,21 @@ int startProcess(int i) {
 	Sleep(200);
 }
 
+void shutdownRoutine() {
+	bool allShutdown = false;
+	while (!allShutdown) {
+		for (int i = 0; i < NUM_PROCESS - 1; i++) {
+			if (IsProcessRunning(Units[i])) {
+				allShutdown = false;
+				break;
+			}
+			else {
+				allShutdown = true;
+			}
+		}
+	}
+}
+
 int main() {
 	//------------Shared Memory Objects---------------
 	SMObject PMObj(_TEXT("PMObj"), sizeof(PM));
@@ -144,24 +159,12 @@ int main() {
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
 		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox);
 		Console::WriteLine("Vehicle Heartbeat " + PMSMPtr->Heartbeats.Flags.Vehicle);
-		//Console::WriteLine("RT: {0,10:F3} LT: {1,10:F3}",XboxPtr->ControlSpeed, XboxPtr->ControlSteering);
 
 		//--------Shutdown all routine--------
-		//TODO: Add Xbox boolean shutdown?
-		if (_kbhit()) {
+		//Press A to shutdown
+		if (_kbhit() || XboxPtr->performShutdown) {
 			PMSMPtr->Shutdown.Status = 0xFF;
-			bool allShutdown = false;
-			while (!allShutdown) {
-				for (int i = 0; i < NUM_PROCESS-1; i++) {
-					if (IsProcessRunning(Units[i])) {
-						allShutdown = false;
-						break;
-					}
-					else {
-						allShutdown = true;
-					}
-				}
-			}
+			shutdownRoutine();
 		}
 
 	}

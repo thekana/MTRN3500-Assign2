@@ -39,6 +39,12 @@ int main() {
 		double steering = (controller.LeftThumbLocation().GetX() - MIN_JOY_STICK) / (MAX_JOY_STICK - MIN_JOY_STICK) * (40 - (-40)) + (-40);
 		XboxPtr->ControlSpeed = speed;
 		XboxPtr->ControlSteering = steering;
+		XboxPtr->performShutdown = controller.PressedA();
+		if (!controller.IsConnected()) {
+			XboxPtr->ControlSpeed = 0;
+			XboxPtr->ControlSteering = 0;
+			Console::WriteLine("Disconnected");
+		}
 		if (_kbhit()) break;
 		Thread::Sleep(20);
 	}

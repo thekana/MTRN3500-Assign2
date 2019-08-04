@@ -4,6 +4,7 @@ struct Remote
 {
 	double ControlSpeed;
 	double ControlSteering;
+	unsigned char performShutdown;
 };
 
 struct GPS_sm

@@ -8,7 +8,7 @@
 using namespace System; // for console
 using namespace System::Threading;
 #define NUM_PROCESS 5
-#define waitTime 20
+#define waitTime 10
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
@@ -73,19 +73,26 @@ struct waitCount {
 	unsigned int LASER = 0;
 	unsigned int MOTOR = 0;
 }count;
+
 void shutdownRoutine() {
-	bool allShutdown = false;
-	while (!allShutdown) {
-		for (int i = 0; i < NUM_PROCESS - 1; i++) {
-			if (IsProcessRunning(Units[i])) {
-				allShutdown = false;
-				break;
-			}
-			else {
-				allShutdown = true;
-			}
-		}
-	}
+	//bool allShutdown = false;
+	//while (!allShutdown) {
+	//	for (int i = 0; i < NUM_PROCESS; i++) {
+	//		if (IsProcessRunning(Units[i])) {
+	//			allShutdown = false;
+	//			break;
+	//		}
+	//		else {
+	//			allShutdown = true;
+	//		}
+	//	}
+	//}
+	int retval;
+	retval = ::_tsystem(_T("taskkill /F /T /IM GPSModule.exe"));
+	retval = ::_tsystem(_T("taskkill /F /T /IM LaserModule.exe"));
+	retval = ::_tsystem(_T("taskkill /F /T /IM VehicleModule.exe"));
+	retval = ::_tsystem(_T("taskkill /F /T /IM XBoxModule.exe"));
+	retval = ::_tsystem(_T("taskkill /F /T /IM DisplayModule.exe"));
 }
 
 int main() {
@@ -173,17 +180,18 @@ int main() {
 		Console::WriteLine("GPS Heartbeat " + PMSMPtr->Heartbeats.Flags.GPS);
 		Console::WriteLine("Xbox Heartbeat " + PMSMPtr->Heartbeats.Flags.Xbox);
 		Console::WriteLine("Vehicle Heartbeat " + PMSMPtr->Heartbeats.Flags.Vehicle);
-
+		//--------Restart--------
+		if (count.GPS > waitTime) {
+			int retval = ::_tsystem(_T("taskkill /F /T /IM GPSModule.exe"));
+			count.GPS = 0;
+		}
 		//--------Shutdown all routine--------
 		//Press A to shutdown
 		if (_kbhit() || XboxPtr->performShutdown || count.XBOX > waitTime || count.LASER > waitTime || count.MOTOR > waitTime) {
 			PMSMPtr->Shutdown.Status = 0xFF;
 			shutdownRoutine();
 		}
-		if (count.GPS > waitTime) {
-			int retval = ::_tsystem(_T("taskkill /F /T /IM GPSModule.exe"));
-			count.GPS = 0;
-		}
+
 	}
 	//Console::ReadKey();
 	Console::WriteLine("Process manager terminated");

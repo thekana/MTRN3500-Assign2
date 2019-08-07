@@ -8,6 +8,7 @@
 using namespace System; // for console
 using namespace System::Threading;
 #define NUM_PROCESS 5
+#define waitTime 20
 TCHAR* Units[10] = //
 {
 	TEXT("GPSModule.exe"),
@@ -44,8 +45,7 @@ int startProcess(int i) {
 		ZeroMemory(&s[i], sizeof(s[i]));
 		s[i].cb = sizeof(s[i]);
 		ZeroMemory(&p[i], sizeof(p[i]));
-		// Start the child processes.
-
+		// Start the child processes
 		if (!CreateProcess(NULL,   // No module name (use command line)
 			Units[i],        // Command line
 			NULL,           // Process handle not inheritable
@@ -67,6 +67,12 @@ int startProcess(int i) {
 	Sleep(200);
 }
 
+struct waitCount {
+	unsigned int GPS = 0;
+	unsigned int XBOX = 0;
+	unsigned int LASER = 0;
+	unsigned int MOTOR = 0;
+}count;
 void shutdownRoutine() {
 	bool allShutdown = false;
 	while (!allShutdown) {
@@ -126,30 +132,38 @@ int main() {
 		//------Critical processes----------
 		if (PMSMPtr->Heartbeats.Flags.Laser == 1) {
 			PMSMPtr->Heartbeats.Flags.Laser = 0;
+			count.LASER = 0;
 		}
 		else {
-			PMSMPtr->Shutdown.Status = 0xFF;
-			break;
+			//PMSMPtr->Shutdown.Status = 0xFF;
+			//break;
+			count.LASER++;
 		}
 		if (PMSMPtr->Heartbeats.Flags.Xbox == 1) {
 			PMSMPtr->Heartbeats.Flags.Xbox = 0;
+			count.XBOX = 0;
 		}
 		else {
-			PMSMPtr->Shutdown.Status = 0xFF;
-			break;
+			//PMSMPtr->Shutdown.Status = 0xFF;
+			//break;
+			count.XBOX++;
 		}
 		if (PMSMPtr->Heartbeats.Flags.Vehicle == 1) {
 			PMSMPtr->Heartbeats.Flags.Vehicle = 0;
+			count.MOTOR = 0;
 		}
 		else {
-			PMSMPtr->Shutdown.Status = 0xFF;
-			break;
+			//PMSMPtr->Shutdown.Status = 0xFF;
+			count.MOTOR++;
+			//break;
 		}
 		//-----Non critical process---------
 		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
 			PMSMPtr->Heartbeats.Flags.GPS = 0;
+			count.GPS = 0;
 		}
 		else {
+			count.GPS++;
 			startProcess(0);
 		}
 
@@ -162,11 +176,14 @@ int main() {
 
 		//--------Shutdown all routine--------
 		//Press A to shutdown
-		if (_kbhit() || XboxPtr->performShutdown) {
+		if (_kbhit() || XboxPtr->performShutdown || count.XBOX > waitTime || count.LASER > waitTime || count.MOTOR > waitTime) {
 			PMSMPtr->Shutdown.Status = 0xFF;
 			shutdownRoutine();
 		}
-
+		if (count.GPS > waitTime) {
+			int retval = ::_tsystem(_T("taskkill /F /T /IM GPSModule.exe"));
+			count.GPS = 0;
+		}
 	}
 	//Console::ReadKey();
 	Console::WriteLine("Process manager terminated");

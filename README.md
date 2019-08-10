@@ -1,5 +1,8 @@
-# MTRN3500-Assign2
+# MTRN3500-Assignment 2
 A Systems Integration Practical with an Unmanned Ground Vehicle
+
+A project involving the usage of shared memory to communicate between applications written in C++.
+
 # ASSIGNMENT 2
 
 ```
@@ -10,37 +13,35 @@ A Systems Integration Practical with an Unmanned Ground Vehicle
 
 - To implement object-oriented programs using C++.
 - To demonstrate interprocess communication and process management.
-- To interface with live streams of data and to use them to assist in thetele-operation of a UGV.
+- To interface with live streams of data and to use them to assist in the tele-operation of a UGV.
 
 Note: The word “module” is used to describe a piece of self-contained software. The word “process” is
 used to describe a module that is running.
 
 # 2 Background
 
-Often, in writing software for Mechatronic Systems, we need to integratesoftware modules that inter-
+Often, in writing software for Mechatronic Systems, we need to integrate software modules that inter-
 act with sensors and actuators and software modules that carry out computational tasks, under the
-supervision of a process management software module. Rather than building a monolithic applica-
-tion, a multi-process approach can be used to separate functional tasks and to simplify the software
+supervision of a process management software module. Rather than building a monolithic application, a multi-process approach can be used to separate functional tasks and to simplify the software
 development, upgrade and maintenance. Such an approach has the added benefit of limiting the
 impact of software errors that may occur during operation, via process isolation. As such, we need to
-use interprocess communication to allow for these specialised processes to communicate with each
+use interprocess communication to allow for these specialized processes to communicate with each
 other.
 
 # 3 What is Required of You
 
-In this assignment, you are expected to write independent modules thatinteract with each other
+In this assignment, you are expected to write independent modules that interact with each other
 through shared memory. At a minimum, your development should include the following software
 modules:
 
-- a Process Management Modulemodule to set up shared memory and to startup, monitor and
+- a Process Management Module to set up shared memory and to startup, monitor and
     shutdown the operation of all the modules listed below.
-- a Laser Modulemodule to interface to a data stream originating from an LMS151 laser rangefinder.
-- a GNSS Moduleto interface to a data stream originating from an Novatel SMART-VI GPSreceiver.
-- a Vehicle Control Moduleto control the unmanned ground vehicle.
-- a XBox Moduleto issue commands using an Xbox game controller.
-- a Display Moduleto graphically display the x-y data of the laser range finder and GNSS data in
+- a Laser Module module to interface to a data stream originating from an LMS151 laser rangefinder.
+- a GNSS Module to interface to a data stream originating from an Novatel SMART-VI GPS receiver.
+- a Vehicle Control Module to control the unmanned ground vehicle.
+- a XBox Module to issue commands using an Xbox game controller.
+- a Display Module to graphically display the x-y data of the laser range finder and GNSS data in
     a virtual world.
-
 
 You are then required to (i). demonstrate GPS data display, (ii). demonstrate steering and propulsion
 control of the UGV and (iii). demonstrate the graphical display of laser data and GPS data. See from
@@ -69,7 +70,7 @@ Develop the process management module to:
     of a critically important process.
 5. attempt to restart a failed non-critical process.
 6. carry out a routine shutdown of all the processes in response to an Xbox event.
-7. indicate to all the other modules that it is alive and operational.If process management fails all
+7. indicate to all the other modules that it is alive and operational. If process management fails all
     other processes should terminate.
 
 Process Management is the most important module and therefore will form acritical process.
@@ -79,7 +80,7 @@ Process Management is the most important module and therefore will form acritica
 The UGV mentioned earlier will have its own server running onboard. The purpose of the server is
 to allow you to interact with the UGV. Therefore, in this part your first task is to establish a Wi-Fi
 connection with this server over the wireless network. Use 192.168.1.200 as the IP address and
-23000 as the port number to connect to and receive laser data. The serverwill authenticate you as a
+23000 as the port number to connect to and receive laser data. The server will authenticate you as a
 permitted user, subsequent to which, you will be allowed to connect to the laser rangefinder to enable
 you to collect laser range data. The most recent laser range data you collected must then be stored
 as an array of X, Y coordinates in the shared memory for other modules to use.
@@ -94,9 +95,10 @@ process management process. This is a critical process for tele-operation.
 First, establish a Wi-Fi connection with the server over the wireless network. Use 192.168.1.200 as
 the IP address and 24000 as the port number. The server does not need any authentication. As
 soon as you connect to the GNSS receiver it will allow you to get global position data records as
-a continuous stream of binary data. Process the binary data to obtain theX, Y position in UTM
+a continuous stream of binary data. Process the binary data to obtain the X, Y position in UTM
 coordinates and height in meters, and make them available in the shared memory for other modules
 to use. In addition, this module should print on the screen, Northing, Easting and Height in meters
+
 + the CRC value.
 
 Incorporate mechanisms in the GNSS module to enable the process management module to detect
@@ -105,9 +107,9 @@ the process management process. This is a non-critical process for tele-operatio
 
 # 7 Part 4 - Vehicle Control Module
 
-The purpose of the vehicle control module is to control the UGV. To controlthe UGV, you must first
+The purpose of the vehicle control module is to control the UGV. To control the UGV, you must first
 establish a Wi-Fi connection with the onboard server of the UGV. Use 192.168.1.200 as the IP address
-and 25000 as the port number to establish this connection. You must sendthe UGV the following
+and 25000 as the port number to establish this connection. You must send the UGV the following
 ASCII string to make it move. Replace the field < steer > by a numerical value between± 40 ◦as the
 required steering angle and, < speed > by a numerical value between±1m/s. as the required speed.
 
@@ -139,9 +141,9 @@ process for tele-operation.
 
 # 9 Part 7 - Display Module
 
-The supplied code (See Assignment 2 page in Moodle) can directly becompiled, linked and executed.
-When executed, it will show a virtual world centred at the origin of the vehicle coordinate frame which
-is also called the body fixed coordinate frame. The vehicle coordinateframe is such that the positive
+The supplied code (See Assignment 2 page in Moodle) can directly be compiled, linked and executed.
+When executed, it will show a virtual world centered at the origin of the vehicle coordinate frame which
+is also called the body fixed coordinate frame. The vehicle coordinate frame is such that the positive
 _x_ -axis is pointing in the direction of the front of the vehicle, the _z_ axis is vertically up and the _y_ axis
 is such that it forms a right-handed coordinate frame.
 
@@ -155,12 +157,11 @@ using the Xbox controller while visualizing the laser data in real time.
 **Important note:** None of the marks will be valid if plagiarism is detected in the submitted code or if
 you did not submit your entire source code by the deadline.
 
-1. You are required to write all the software to ensure the operation of theabove-mentioned pro-
-    cesses in your own time. You will use your own computers to develop and demonstrate your
+1. You are required to write all the software to ensure the operation of the above-mentioned processes in your own time. You will use your own computers to develop and demonstrate your
     software. No more PC104s.
 2. Complete **progress check** in week 8. The first progress check is to demonstrate the layout of
     all the skeletal modules (the modules may not be fully fleshed out but the laser module must be
-    complete) and the operation of the interprocess communication throughheartbeat management.
+    complete) and the operation of the interprocess communication through heartbeat management.
     The demonstration required is,
 
 ```
@@ -170,8 +171,8 @@ process management process. A routine shutdown of the process management process
 You must get this marked during your allocated lab time in week 8. Late penalties per
 School policy applies.
 ```
-3. Complete **assessment** in week 10. This is an assessment and therefore there areno repeat
-    opportunitiesfor these tasks. You get only one opportunity to demonstrate.
+3. Complete **assessment** in week 10. This is an assessment and therefore there are no repeat
+    opportunities for these tasks. You get only one opportunity to demonstrate.
 
 ```
 (a) The operation of the GNSS process plotting GNSS data on the graphicaldisplay and printing
@@ -186,7 +187,7 @@ You must get this marked during your allocated lab time in week 10. Late penalti
 School policy applies.
 ```
 4. **DO NOT FORGET** to submit all your software in a zip file named z<1234567>.zip with <1234567> re-
-    placed by your student number.Submit your file by 11.59 pm of 9 August 2019. Failing to do
+    placed by your student number. Submit your file by 11.59 pm of 9 August 2019. Failing to do
     this will apply late submission penalties to your full assignment marks.
 
 **NOTE:** The penalty for late assessment is as per the School policy. It applies if you did not complete

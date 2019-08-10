@@ -29,6 +29,7 @@ UGV::UGV(System::String^ ipaddress, int portNumber)
 
 void UGV::setControl(double Steering, double Speed, unsigned int flag)
 {
+	Steering = -Steering;
 	String^ SendControl = gcnew String("# " + Steering.ToString("f2") + " " 
 		+ Speed.ToString("f2") + " " + flag + " #");
 	Console::WriteLine(SendControl);

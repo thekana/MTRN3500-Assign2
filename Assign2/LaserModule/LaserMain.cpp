@@ -41,15 +41,6 @@ int main() {
 	array<double> ^RangeX;
 	array<double> ^RangeY;
 	LiDAR^ laser = gcnew LiDAR("192.168.1.200", PortNumber);
-	//// Creat TcpClient object and connect to it
-	//Client = gcnew TcpClient("192.168.1.200", PortNumber);
-	//// Configure connection
-	//Client->NoDelay = true;
-	//Client->ReceiveTimeout = 500;//ms
-	//Client->SendTimeout = 500;//ms
-	//Client->ReceiveBufferSize = 2048;
-	//Client->SendBufferSize = 1024;
-
 	// unsigned char arrays of 16 bytes each are created on managed heap
 	SendData = gcnew array<unsigned char>(16);
 	ReadData = gcnew array<unsigned char>(2500);
@@ -117,6 +108,5 @@ int main() {
 	Stream->Close();
 	laser->closeClient();
 	Console::WriteLine("Laser Process terminated");
-	// Console::ReadKey();
 	return 0;
 }

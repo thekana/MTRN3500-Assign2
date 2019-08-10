@@ -75,18 +75,7 @@ struct waitCount {
 }count;
 
 void shutdownRoutine() {
-	//bool allShutdown = false;
-	//while (!allShutdown) {
-	//	for (int i = 0; i < NUM_PROCESS; i++) {
-	//		if (IsProcessRunning(Units[i])) {
-	//			allShutdown = false;
-	//			break;
-	//		}
-	//		else {
-	//			allShutdown = true;
-	//		}
-	//	}
-	//}
+	/*Scuffed shutdown routine*/
 	int retval;
 	retval = ::_tsystem(_T("taskkill /F /T /IM GPSModule.exe"));
 	retval = ::_tsystem(_T("taskkill /F /T /IM LaserModule.exe"));
@@ -142,8 +131,6 @@ int main() {
 			count.LASER = 0;
 		}
 		else {
-			//PMSMPtr->Shutdown.Status = 0xFF;
-			//break;
 			count.LASER++;
 		}
 		if (PMSMPtr->Heartbeats.Flags.Xbox == 1) {
@@ -151,8 +138,6 @@ int main() {
 			count.XBOX = 0;
 		}
 		else {
-			//PMSMPtr->Shutdown.Status = 0xFF;
-			//break;
 			count.XBOX++;
 		}
 		if (PMSMPtr->Heartbeats.Flags.Vehicle == 1) {
@@ -160,9 +145,7 @@ int main() {
 			count.MOTOR = 0;
 		}
 		else {
-			//PMSMPtr->Shutdown.Status = 0xFF;
 			count.MOTOR++;
-			//break;
 		}
 		//-----Non critical process---------
 		if (PMSMPtr->Heartbeats.Flags.GPS == 1) {
@@ -193,7 +176,6 @@ int main() {
 		}
 
 	}
-	//Console::ReadKey();
 	Console::WriteLine("Process manager terminated");
 	Console::ReadKey();
 	return 0;

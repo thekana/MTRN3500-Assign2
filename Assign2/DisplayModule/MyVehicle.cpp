@@ -138,33 +138,14 @@ void MyVehicle::drawLaser()
 {
 	glPushMatrix();
 	glTranslatef(0.5, 0.3, 0);
-	// glRotatef(-rotation, 0, 0, 0);
 	glColor3f(1.0, 0.5, 0);
 	glLineWidth(1.5);
 	for (int i = 0; i < *numData; i++) {
 		glBegin(GL_LINES);
 		glVertex3f(0, 0, 0);
 		glVertex3f(*(xData + i) / 1000, 0, -*(yData + i) / 1000);
-		//glVertex3f(0, *(yData + i), *(xData + i));
 		glEnd();
-		//if (*(xData + i) != 0 || *(yData + i) != 0) {
-		//	X1 = X2;
-		//	Y1 = Y2;
-		//	X2 = *(xData + i);
-		//	Y2 = *(yData + i);
-		//	//glVertex3f(1, 0, 0);
-		//	glBegin(GL_LINES);
-		//	glTranslatef(x, y, z);
-		//	glVertex3f(X1 / 100, 0 , -Y1 / 100);
-		//	glVertex3f(X2 / 100, 0 , -Y2 / 100);
-		//	glEnd();
-		//	//glVertex3f(Y2 / 100 + 1, 0, X2 / 100);
-		//}
-		// glEnd();
-		//std::cout << "print laser_" << *numData << " X: " << *(xData + i) << " Y: " << *(yData + i) << std::endl;
 	}
-	//std::cout << "print laser2" << std::endl;
-	//glEnd();
 	glPopMatrix();
 }
 

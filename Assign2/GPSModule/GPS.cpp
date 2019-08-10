@@ -40,11 +40,6 @@ void GPS::processGPSData()
 	if (Stream->DataAvailable) {
 		Stream->Read(ReadData, 0, ReadData->Length);
 	}
-	/*Print statement to observe*/
-	//for (int i = 0; i < ReadData->Length; i++) {
-	//	Console::Write("{0:X2} ", ReadData[i]);
-	//}
-	Console::WriteLine("");
 	this->readFromHeader();
 	// Compare CRC before setting attributes
 	unsigned char *bytePtr = (unsigned char*)&GPS_struct;

@@ -43,6 +43,5 @@ int main() {
 	}
 
 	Console::WriteLine("GPS Process terminated");
-	//Console::ReadKey();
 	return 0;
 }
